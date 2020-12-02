@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>advent2020</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="day1.fs" />
+        <Compile Include="day2.fs" />
+        <Compile Include="program.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="inputs\*.txt">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>
