@@ -12,4 +12,5 @@ let time f =
 let main _argv =
     time (day1.Solve)
     time (day2.Solve)
+    time (day3.Solve)
     0
