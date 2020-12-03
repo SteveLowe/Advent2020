@@ -11,4 +11,5 @@ let time f =
 [<EntryPoint>]
 let main _argv =
     time (day1.Solve)
+    time (day2.Solve)
     0
