@@ -132,7 +132,7 @@ let Solve () =
         |> List.filter passportValid
 
     let answer1 = fieldsPresentPassports.Length
-    printfn "day3-part1:\n  Passports: %i\n  Answer: %i" (pendingPassports.AllPassports().Length) answer1
+    printfn "day4-part1:\n  Passports: %i\n  Answer: %i" (pendingPassports.AllPassports().Length) answer1
 
     let answer2 = validPassports.Length
-    printfn "day3-part2:\n  Answer: %i" answer2
+    printfn "day4-part2:\n  Answer: %i" answer2
