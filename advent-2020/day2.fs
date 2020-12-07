@@ -10,9 +10,6 @@ type PasswordEntry =
       Password: string }
 
 let Solve () =
-    let is a b = a = b
-    let (!=) a b = not (a = b)
-
     let parseInt (line: string) =
         let notNumber char = not (Char.IsNumber char)
 

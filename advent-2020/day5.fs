@@ -5,8 +5,6 @@ open System.IO
 type BoardingPass = { Row: int; Column: int; SeatId: int }
 
 let Solve () =
-    let add a b = a + b
-
     let parseBoardingPass (line: string) =
         let parseRowChar i c =
             match c with
@@ -49,6 +47,8 @@ let Solve () =
     let answer1 =
         passes |> Array.maxBy (fun p -> p.SeatId)
 
+    printfn "day5-part1:\n  Answer: %i" answer1.SeatId
+
     let answer2 =
         passes
         |> Array.map (fun p -> p.SeatId)
@@ -56,6 +56,5 @@ let Solve () =
         |> Array.reduce findBeforeMissingEntry
         |> add 1
 
-    printfn "day5-part1:\n  Answer: %i" answer1.SeatId
 
     printfn "day5-part2:\n  Answer: %i" answer2
