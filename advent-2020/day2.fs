@@ -30,7 +30,7 @@ let Solve () =
 
     let parseEntry (line: string) =
         let parts = line.Split(':', 2)
-        if parts.Length != 2 then failwith "Invalid input"
+        if parts.Length <> 2 then failwith "Invalid input"
 
         let policy = parts.[0] |> parsePolicy
         let password = parts.[1].Trim()
@@ -55,7 +55,7 @@ let Solve () =
             | _ -> entry.Password.[index] = policy.Char
 
         charMatches (policy.Min - 1)
-        != charMatches (policy.Max - 1)
+        <> charMatches (policy.Max - 1)
 
     let input =
         File.ReadAllLines "inputs/day2.txt"
