@@ -36,7 +36,7 @@ let Solve () =
 
         let rec loop (i, acc, processed) =
             let isInvalid = i < 0
-            let isCompleted = i >= lastInstruction
+            let isCompleted = i > lastInstruction
             let alreadyProcessed = processed |> List.contains i
 
             match (isCompleted, isInvalid, alreadyProcessed) with
@@ -56,7 +56,8 @@ let Solve () =
         | Failed errorMsg -> failwithf "failed: %s" errorMsg
         | _ -> failwith "instructions did not loop!"
 
-    let findAccAfterExecution instructions =
+    let findAccAfterExecution (instructions: Instruction array) =
+        let lastInstruction = instructions.Length - 1
         let isNopOrJmp instruction =
             match instruction with
             | Jmp _
@@ -65,8 +66,8 @@ let Solve () =
 
         let swapNopJmp instruction =
             match instruction with
-            | Jmp i -> [| Nop i |]
-            | Nop i -> [| Jmp i |]
+            | Jmp i -> Nop i
+            | Nop i -> Jmp i
             | _ -> failwithf "invalid instruction %O" instruction
 
         let swapNextInstruction (instructions: Instruction array) i =
@@ -77,12 +78,24 @@ let Solve () =
 
             let i = i + offset
             let pre = instructions |> Array.take i
-            let swp = instructions.[i] |> swapNopJmp
+            let swp = [| instructions.[i] |> swapNopJmp |]
             let post = instructions |> Array.skip (i + 1)
 
-            Array.concat [| pre; swp; post |]
+            let swappedInstructions = Array.concat [| pre; swp; post |]
+            (swappedInstructions, i)
 
-        0
+        let rec loop i =
+            let isCompleted = i >= lastInstruction
+            match isCompleted with
+            | true -> failwithf "Failed to find solution"
+            | _ ->
+                let (newInstructions, i) = swapNextInstruction instructions i
+                match findAcc newInstructions with
+                | Completed acc -> acc
+                | Failed errorMsg -> failwith errorMsg
+                | Loop _ -> loop (i + 1)
+            
+        loop 0
 
     let instructions =
         File.ReadLines "inputs/day8.txt"
