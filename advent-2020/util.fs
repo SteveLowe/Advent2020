@@ -7,22 +7,24 @@ let add a b = a + b
 let is a b = a = b
 let isNot a b = a <> b
 
-let notNullOrWhiteSpace (s: string) = not (String.IsNullOrWhiteSpace s)
+let nullOrWhiteSpace s = String.IsNullOrWhiteSpace s
+let notNullOrWhiteSpace = nullOrWhiteSpace >> not
 
 let splitOnEmpty (arr: string array) =
-    let mutable i = 0
-    let mutable result: string array list = []
+    let rec loop (arr: string array, l) =
+        match arr.Length with
+        | 0 -> l |> List.rev |> List.toArray
+        | _ ->
+            let a =
+                arr
+                |> Array.skipWhile nullOrWhiteSpace
+                |> Array.takeWhile notNullOrWhiteSpace
 
-    while i < arr.Length do
-        let a =
-            arr
-            |> Array.skip i
-            |> Array.takeWhile notNullOrWhiteSpace
+            let arr = arr |> Array.skipWhile nullOrWhiteSpace |> Array.skip a.Length
+            let l = a :: l
+            loop (arr, l)
 
-        i <- i + a.Length + 1
-        if a.Length > 0 then result <- a :: result
-
-    result |> List.rev |> List.toArray
+    loop (arr, [])
 
 // find first matching element in array
 // returns a tuple of the element and and array with the remaining elements
