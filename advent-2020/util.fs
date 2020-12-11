@@ -20,7 +20,11 @@ let splitOnEmpty (arr: string array) =
                 |> Array.skipWhile nullOrWhiteSpace
                 |> Array.takeWhile notNullOrWhiteSpace
 
-            let arr = arr |> Array.skipWhile nullOrWhiteSpace |> Array.skip a.Length
+            let arr =
+                arr
+                |> Array.skipWhile nullOrWhiteSpace
+                |> Array.skip a.Length
+
             let l = a :: l
             loop (arr, l)
 
@@ -32,3 +36,9 @@ let arrayTryPartition1 f (arr: 'a array) =
     match (arr |> Array.tryFind f) with
     | Some a -> (Some a, (arr |> Array.filter (isNot a)))
     | None -> (None, arr)
+
+let addsTo (target: int64) a b = a + b = target
+let anyAddsTo target nums a = nums |> Array.exists (addsTo target a)
+
+let anyTwoAddTo target nums =
+    nums |> Array.exists (anyAddsTo target nums)
