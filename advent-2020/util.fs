@@ -42,3 +42,14 @@ let anyAddsTo target nums a = nums |> Array.exists (addsTo target a)
 
 let anyTwoAddTo target nums =
     nums |> Array.exists (anyAddsTo target nums)
+
+let getDiffs (numbers: int array) =
+    let rec loop l i =
+        match i >= numbers.Length with
+        | true -> l |> List.rev |> List.toArray
+        | _ ->
+            let diff = numbers.[i] - numbers.[i - 1]
+            let l = diff :: l
+            loop l (i + 1)
+
+    loop [] 1

@@ -30,7 +30,7 @@ let Solve () =
         loop preamble
 
     let answer1 = input |> findInvalidXmasNumber 25
-    printfn "day8-part1:\n  Answer: %i" answer1
+    printfn "day9-part1:\n  Answer: %i" answer1
 
     let anyAddsTo target (numbers: int64 array) =
         let rec loop i =
@@ -67,4 +67,4 @@ let Solve () =
         (answer2Range |> Array.min)
         + (answer2Range |> Array.max)
 
-    printfn "day8-part2:\n  Answer: %i" answer2
+    printfn "day9-part2:\n  Answer: %i" answer2
