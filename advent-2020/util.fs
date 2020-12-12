@@ -4,8 +4,8 @@ module advent2020.util
 open System
 
 let add a b = a + b
-let is a b = a = b
-let isNot a b = a <> b
+let eq a b = a = b
+let neq a b = a <> b
 
 let nullOrWhiteSpace s = String.IsNullOrWhiteSpace s
 let notNullOrWhiteSpace = nullOrWhiteSpace >> not
@@ -34,7 +34,7 @@ let splitOnEmpty (arr: string array) =
 // returns a tuple of the element and and array with the remaining elements
 let arrayTryPartition1 f (arr: 'a array) =
     match (arr |> Array.tryFind f) with
-    | Some a -> (Some a, (arr |> Array.filter (isNot a)))
+    | Some a -> (Some a, (arr |> Array.filter (neq a)))
     | None -> (None, arr)
 
 let addsTo (target: int64) a b = a + b = target

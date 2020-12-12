@@ -41,7 +41,7 @@ let Solve () =
 
         let charCount =
             entry.Password.ToCharArray()
-            |> Array.filter (is policy.Char)
+            |> Array.filter (eq policy.Char)
             |> Array.length
 
         charCount >= policy.Min && charCount <= policy.Max
