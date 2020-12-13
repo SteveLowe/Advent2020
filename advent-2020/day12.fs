@@ -77,3 +77,52 @@ let Solve () =
     let (a1Dir, a1Pos) = input |> followInstructions1
     let answer1 = abs a1Pos.E + abs a1Pos.N
     printfn "day11-part1:\n  FinalState: %O %i,%i\n  Answer: %i" a1Dir a1Pos.E a1Pos.N answer1
+
+    let followInstructions2 (instructions: Instruction array) =
+        let followInstruction (pos, wp) instruction =
+
+            // move forward to the waypoint a number of times equal to the given value.
+            let move units =
+                ({ pos with
+                       E = pos.E + (wp.E * units)
+                       N = pos.N + (wp.N * units) },
+                 wp)
+
+            // move the waypoint $direction by the given value.
+            let moveWP direction units =
+                let (wp) =
+                    match direction with
+                    | North -> { wp with N = wp.N + units }
+                    | South -> { wp with N = wp.N - units }
+                    | East -> { wp with E = wp.E + units }
+                    | West -> { wp with E = wp.E - units }
+
+                (pos, wp)
+
+            // rotate the waypoint around the ship left|right by the given number of degrees.
+            let turnWP direction degrees =
+                let units = (degrees / 90) % 4 |> int
+
+                let (wp) =
+                    match (direction, units) with
+                    | (_, 2) -> { wp with E = wp.E * -1; N = wp.N * -1 }
+                    | (_, 0) -> wp
+                    | (Right, 3)
+                    | (Left, 1) -> { wp with E = wp.N * -1; N = wp.E }
+                    | (Left, 3)
+                    | (Right, 1) -> { wp with E = wp.N; N = wp.E * -1 }
+                    | (_, _) -> failwithf "invalid turnWP %O %i" direction units
+
+                (pos, wp)
+
+            match instruction with
+            | Forward units -> move units
+            | Direction (dir, units) -> moveWP dir units
+            | Turn (dir, units) -> turnWP dir units
+
+        instructions
+        |> Array.fold followInstruction ({ E = 0; N = 0 }, { E = 10; N = 1 })
+
+    let (a2Pos, a2wp) = input |> followInstructions2
+    let answer2 = abs a2Pos.E + abs a2Pos.N
+    printfn "day11-part2:\n  Position: %i,%i\n  Waypoint: %i,%i\n  Answer: %i" a2Pos.E a2Pos.N a2wp.E a2wp.N answer2
