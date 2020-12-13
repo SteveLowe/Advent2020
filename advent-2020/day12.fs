@@ -19,6 +19,8 @@ type Instruction =
     | Turn of (Turn * int)
     | Direction of (Direction * int)
 
+type Position = { E: int; N: int }
+
 let parseInstruction (action: string): Instruction =
     let num = action.[1..] |> int
 
@@ -34,27 +36,30 @@ let parseInstruction (action: string): Instruction =
 
 let Solve () =
     let followInstructions1 (instructions: Instruction array) =
-        let followInstruction (heading, posN, posE) instruction =
+        let followInstruction (heading, pos) instruction =
+
+            // move $direction by the given value.
             let move direction units =
-                let (posN, posE) =
+                let pos =
                     match direction with
-                    | North -> (posN + units, posE)
-                    | South -> (posN - units, posE)
-                    | East -> (posN, posE + units)
-                    | West -> (posN, posE - units)
+                    | North -> { pos with N = pos.N + units }
+                    | South -> { pos with N = pos.N - units }
+                    | East -> { pos with E = pos.E + units }
+                    | West -> { pos with E = pos.E - units }
 
-                (heading, posN, posE)
+                (heading, pos)
 
-            let turn direction units =
+            // turn left|right the given number of degrees.
+            let turn direction degrees =
                 let dirIndex =
                     Directions |> Array.findIndex (eq heading)
 
                 let newDirIndex =
                     match direction with
-                    | Right -> dirIndex + (units / 90)
-                    | Left -> dirIndex - (units / 90) + Directions.Length
+                    | Right -> dirIndex + (degrees / 90)
+                    | Left -> dirIndex - (degrees / 90) + Directions.Length
 
-                (Directions.[newDirIndex % Directions.Length], posN, posE)
+                (Directions.[newDirIndex % Directions.Length], pos)
 
             match instruction with
             | Forward units -> move heading units
@@ -62,13 +67,13 @@ let Solve () =
             | Turn (dir, units) -> turn dir units
 
         instructions
-        |> Array.fold followInstruction (East, 0, 0)
+        |> Array.fold followInstruction (East, { E = 0; N = 0 })
 
     let input =
         File.ReadLines "inputs/day12.txt"
         |> Seq.map parseInstruction
         |> Seq.toArray
 
-    let (a1Dir, a1N, a1E) = input |> followInstructions1
-    let answer1 = abs a1N + abs a1E
-    printfn "day11-part1:\n  FinalState: %O %i %i\n  Answer: %i" a1Dir a1N a1E answer1
+    let (a1Dir, a1Pos) = input |> followInstructions1
+    let answer1 = abs a1Pos.E + abs a1Pos.N
+    printfn "day11-part1:\n  FinalState: %O %i,%i\n  Answer: %i" a1Dir a1Pos.E a1Pos.N answer1
