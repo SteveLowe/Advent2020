@@ -22,4 +22,5 @@ let main _argv =
     time (day10.Solve)
     time (day11.Solve)
     time (day12.Solve)
+    time (day13.Solve)
     0
