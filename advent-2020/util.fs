@@ -53,3 +53,14 @@ let getDiffs (numbers: int array) =
             loop l (i + 1)
 
     loop [] 1
+
+let rec repeat n item =
+    seq {
+        if n > 0 then
+            yield item
+            yield! repeat (n - 1) item
+    }
+
+let withi arr =
+    let addi (i: int32) a = (i, a)
+    arr |> Array.mapi addi
