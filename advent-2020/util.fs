@@ -7,6 +7,9 @@ let add a b = a + b
 let eq a b = a = b
 let neq a b = a <> b
 
+let setBit64 i a = a ||| (1L <<< i)
+let clearBit64 i a = a &&& ~~~(1L <<< i)
+
 let nullOrWhiteSpace s = String.IsNullOrWhiteSpace s
 let notNullOrWhiteSpace = nullOrWhiteSpace >> not
 
