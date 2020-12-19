@@ -13,6 +13,8 @@ let clearBit64 i a = a &&& ~~~(1L <<< i)
 let nullOrWhiteSpace s = String.IsNullOrWhiteSpace s
 let notNullOrWhiteSpace = nullOrWhiteSpace >> not
 
+let nsnd (a, b) = not b
+
 let splitOnEmpty (arr: string array) =
     let rec loop (arr: string array, l) =
         match arr.Length with
