@@ -71,12 +71,12 @@ let Solve () =
                   OrMask =
                       mask
                       |> Array.rev
-                      |> withi
+                      |> Array.withi
                       |> Array.fold getOrMask 0L
                   AndMask =
                       mask
                       |> Array.rev
-                      |> withi
+                      |> Array.withi
                       |> Array.fold getAndMask Int64.MaxValue }
 
         match instruction with
@@ -115,7 +115,7 @@ let Solve () =
             let addrs =
                 mask
                 |> Array.rev
-                |> withi
+                |> Array.withi
                 |> Array.fold applyBit [ addr ]
                 |> List.toArray
 

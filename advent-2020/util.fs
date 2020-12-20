@@ -7,6 +7,8 @@ let add a b = a + b
 let eq a b = a = b
 let neq a b = a <> b
 
+let isTrue (b: bool) = b
+let isFalse (b: bool) = not b
 let setBit64 i a = a ||| (1L <<< i)
 let clearBit64 i a = a &&& ~~~(1L <<< i)
 
@@ -66,6 +68,27 @@ let rec repeat n item =
             yield! repeat (n - 1) item
     }
 
-let withi arr =
-    let addi (i: int32) a = (i, a)
-    arr |> Array.mapi addi
+let argtup2 a b = (a, b)
+
+module Seq =
+    let withi seq = seq |> Seq.mapi argtup2
+
+module Array =
+    let withi arr = arr |> Array.mapi argtup2
+
+    let addToMap (map: Map<'a, 'b>) (arr: ('a * 'b) array) =
+        let rec loop m i =
+            match arr |> Array.tryItem i with
+            | None -> m
+            | Some (a, b) -> loop (m |> Map.add a b) (i + 1)
+
+        loop map 0
+
+module List =
+    let addToMap (map: Map<'a, 'b>) (lst: ('a * 'b) list) =
+        let rec loop m lst =
+            match lst |> List.tryHead with
+            | None -> m
+            | Some (a, b) -> loop (m |> Map.add a b) lst.Tail
+
+        loop map lst
