@@ -20,13 +20,15 @@ let solve day getInput f1 a1 f2 a2 =
 
         if a = answer then
             printfn $"  answer: %i{answer} ✅ Correct!"
+            true
         else
             printfn $"  answer: %i{answer} ❌ Incorrect! expected %i{a}"
-            failwithf $"Answer Incorrect. got %i{answer} expected %i{a}"
+            false
 
-    solvePart 1 f1 a1
-    solvePart 2 f2 a2
     printfn ""
+    match ((solvePart 1 f1 a1), (solvePart 2 f2 a2)) with
+    | (true, true) -> ()
+    | _ -> failwith $"day%i{day} failed"
 
 [<EntryPoint>]
 let main _argv =
@@ -47,6 +49,6 @@ let main _argv =
     time day15.Solve ()
     time day16.Solve ()
     time day17.Solve ()
-    solve 18 day18.getInput day18.part1 23507031841020L day18.part2 222L
+    solve 18 day18.getInput day18.part1 23507031841020L day18.part2 218621700997826L
 
     0

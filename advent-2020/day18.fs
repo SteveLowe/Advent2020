@@ -74,16 +74,16 @@ let parseMaths line =
     result
 
 
-let executeOp (op: Op) a b =
+let executeOp op a b =
     match op with
     | Addition -> a + b
     | Multiplication -> a * b
 
-let executeExpr (expr: Expr) =
-    let rec exec (expr: Expr) =
+let executeExpr expr =
+    let rec exec expr =
         match expr with
-        | Number (n) -> n
-        | Parenthesis (e) -> exec e
+        | Number n -> n
+        | Parenthesis e -> exec e
         | Expression (e1, op, e2) ->
             let n1 = exec e1
             let n2 = exec e2
@@ -96,9 +96,42 @@ let getInput () =
     |> Seq.map parseMaths
     |> Seq.toArray
 
-let part1 (input: Expr array) =
-    input
-    |> Array.map executeExpr
-    |> Array.sum
+let part1 input =
+    input |> Array.map executeExpr |> Array.sum
 
-let part2 input = -1L
+let executeExprAddFirst (expr: Expr) =
+    let rec exec expr =
+        let expr = execAdd expr
+        match expr with
+        | Number n -> n
+        | Parenthesis e -> exec e
+        | Expression (l, op, r) ->
+            let l = exec l
+            let r = exec r
+            executeOp op l r
+    and execAdd b =
+        match b with
+        | Expression (a, bop, br) ->
+            let bri = exec br
+            match a with
+            | Expression (z, aop, ar) ->
+                let ari = (exec ar)
+                match bop with
+                // B(A(2 * 3) + 4) to A(2 * 7)
+                // B(A(Z(2 * 3) + 4) + 5) to A(Z(2 * 3) + 9) to Z(2 * 12)
+                | Addition ->
+                    let a = Expression(z, aop, Number(bri + ari))
+                    execAdd a
+                // B(A(2 + 3) * 4) to B(5 * 4)
+                | Multiplication ->
+                    let a = execAdd a
+                    Expression(a, bop, Number bri)
+            | _ -> Expression(a, bop, Number bri)
+        | _ -> b
+
+    exec expr
+
+let part2 input =
+    input
+    |> Array.map executeExprAddFirst
+    |> Array.sum
