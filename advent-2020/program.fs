@@ -50,6 +50,6 @@ let main _argv =
     time day16.Solve ()
     time day17.Solve ()
     solve 18 day18.getInput day18.part1 23507031841020L day18.part2 218621700997826L
-    solve 19 day19.getInput day19.part1 184 day19.part2 -1
+    solve 19 day19.getInput day19.part1 184 day19.part2 389
 
     0
