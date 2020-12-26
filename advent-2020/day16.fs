@@ -17,7 +17,7 @@ let Solve () =
     let input =
         let groups =
             File.ReadAllLines "inputs/day16.txt"
-            |> splitOnEmpty
+            |> Array.splitOnEmpty
 
         let parseRule line =
             //e.g. class: 1-3 or 5-7

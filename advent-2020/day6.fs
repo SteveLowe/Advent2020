@@ -20,7 +20,7 @@ let Solve () =
 
     let groups =
         File.ReadAllLines "inputs/day6.txt"
-        |> splitOnEmpty
+        |> Array.splitOnEmpty
 
 
     let answer1 =

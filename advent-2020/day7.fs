@@ -39,7 +39,7 @@ let Solve () =
         let rec loop colors matched remaining =
             let (m, remaining) =
                 remaining
-                |> arrayTryPartition1 (canContainAnyBag colors)
+                |> Array.tryPartition1 (canContainAnyBag colors)
 
             match m with
             | None -> matched
