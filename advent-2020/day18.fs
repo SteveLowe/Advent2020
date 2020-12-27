@@ -91,8 +91,8 @@ let executeExpr expr =
 
     exec expr
 
-let getInput () =
-    File.ReadLines "inputs/day18.txt"
+let getInput file =
+    File.ReadLines file
     |> Seq.map parseMaths
     |> Seq.toArray
 

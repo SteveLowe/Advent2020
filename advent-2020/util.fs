@@ -3,7 +3,7 @@ module advent2020.util
 
 open System
 
-let add a b = a + b
+let inline add a b = a + b
 let eq a b = a = b
 let neq a b = a <> b
 
@@ -15,13 +15,16 @@ let clearBit64 i a = a &&& ~~~(1L <<< i)
 let nullOrWhiteSpace s = String.IsNullOrWhiteSpace s
 let notNullOrWhiteSpace = nullOrWhiteSpace >> not
 
-let nsnd (a, b) = not b
+let nsnd (_, b) = not b
 
 let addsTo (target: int64) a b = a + b = target
 let anyAddsTo target nums a = nums |> Array.exists (addsTo target a)
 
 let anyTwoAddTo target nums =
     nums |> Array.exists (anyAddsTo target nums)
+
+let firstChar (s: string) = s.ToCharArray() |> Array.head
+let lastChar (s: string) = s.ToCharArray() |> Array.last
 
 let getDiffs (numbers: int array) =
     let rec loop l i =
@@ -43,11 +46,19 @@ let rec repeat n item =
 
 let argtup2 a b = (a, b)
 
+module String =
+    /// Reverse the characters in the string
+    /// Will only work for ascii strings. unicode multi-byte chars will get mangled
+    let rev (input: string) =
+        String.Join("", input.ToCharArray() |> Array.rev)
+
 module Seq =
     let withi seq = seq |> Seq.mapi argtup2
 
 module Array =
     let withi arr = arr |> Array.mapi argtup2
+
+    let toString (arr: char array) = String.Join("", arr)
 
     let addToMap (map: Map<'a, 'b>) (arr: ('a * 'b) array) =
         let rec loop m i =
@@ -56,7 +67,7 @@ module Array =
             | Some (a, b) -> loop (m |> Map.add a b) (i + 1)
 
         loop map 0
-        
+
     let splitOnEmpty (arr: string array) =
         let rec loop (arr: string array, l) =
             match arr.Length with
@@ -76,7 +87,7 @@ module Array =
                 loop (arr, l)
 
         loop (arr, [])
-        
+
     // find first matching element in array
     // returns a tuple of the element and and array with the remaining elements
     let tryPartition1 f (arr: 'a array) =

@@ -52,10 +52,9 @@ let parseRule line =
     | Success (result, _, _) -> result
     | Failure (errorMsg, _, _) -> failwithf "failed to parse: %s\n%s" line errorMsg
 
-let getInput (): Rules * string array =
+let getInput file: Rules * string array =
     let parts =
-        File.ReadAllLines "inputs/day19.txt"
-        |> Array.splitOnEmpty
+        File.ReadAllLines file |> Array.splitOnEmpty
 
     if parts.Length <> 2
     then failwith "invalid input - too many blank lines"

@@ -6,29 +6,22 @@ let time f i =
     let sw = Stopwatch.StartNew()
     let answer = f i
     sw.Stop()
-    printfn "Duration: %ims" sw.ElapsedMilliseconds
+    printfn $"  duration: %i{sw.ElapsedMilliseconds}ms"
     answer
 
 
-let solve day getInput f1 a1 f2 a2 =
-    printfn $"day %i{day}:"
-    let input = getInput ()
+let inline solve day part getInput solver expected =
+    printfn $"day %i{day} part%i{part}:"
 
-    let solvePart i f a =
-        printfn $" part%i{i}:"
-        let answer = time f input
+    let answer =
+        getInput $"inputs/day%i{day}.txt" |> time solver
 
-        if a = answer then
-            printfn $"  answer: %i{answer} ✅ Correct!"
-            true
-        else
-            printfn $"  answer: %i{answer} ❌ Incorrect! expected %i{a}"
-            false
-
-    printfn ""
-    match ((solvePart 1 f1 a1), (solvePart 2 f2 a2)) with
-    | (true, true) -> ()
-    | _ -> failwith $"day%i{day} failed"
+    if answer = expected then
+        printfn $"  answer: %i{answer} ✅ Correct!"
+        printfn ""
+    else
+        printfn $"  answer: %i{answer} ❌ Incorrect! expected %i{expected}"
+        failwith $"day%i{day} part%i{part} failed"
 
 [<EntryPoint>]
 let main _argv =
@@ -49,7 +42,13 @@ let main _argv =
     time day15.Solve ()
     time day16.Solve ()
     time day17.Solve ()
-    solve 18 day18.getInput day18.part1 23507031841020L day18.part2 218621700997826L
-    solve 19 day19.getInput day19.part1 184 day19.part2 389
+    
+    solve 18 1 day18.getInput day18.part1 23507031841020L
+    solve 18 2 day18.getInput day18.part2 218621700997826L
+    
+    solve 19 1 day19.getInput day19.part1 184
+    solve 19 2 day19.getInput day19.part2 389
+    
+    solve 20 1 day20.getInput day20.part1 -1L
 
     0
