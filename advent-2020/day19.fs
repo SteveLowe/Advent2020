@@ -67,7 +67,7 @@ let getInput (): Rules * string array =
 
 let matchesRule (rules: Rules) input =
     let rec loop rule (next: Rule option) (input: String) =
-//        printfn "  Match %25s %A  next: (%A)" input rule next
+        // printfn "  Match %25s %A  next: (%A)" input rule next
 
         let getNext n =
             match next with
@@ -75,54 +75,34 @@ let matchesRule (rules: Rules) input =
             | None -> Some n
 
         if input = "" then
-            false, input
+            false
         else
             match rule with
             | Character c ->
                 match input.StartsWith c with
-                | true -> true, (input.Substring 1)
                 | false ->
-//                    printfn "        %25s %c <> %c" input c input.[0]
-                    false, input
+                    // printfn "        %25s %c <> %c" input c input.[0]
+                    false
+                | true ->
+                    match next, input.Substring 1 with
+                    | None, "" -> true
+                    | None, _ -> false
+                    | Some next, remainder -> loop next None remainder
             | RuleId id -> loop rules.[id] next input
-            | Pair (a, b) ->
-                match loop a (getNext b) input with
-                | false, _ -> false, input
-                | true, r ->
-//                    printfn "        %25s %A - %A succeeded, trying %A with %s" input rule a b r
-                    loop b next r
-            | Triple (a, b, c) ->
-                let bc = Pair(b, c)
-
-                match loop a (getNext bc) input with
-                | false, _ -> false, input
-                | true, r ->
-//                    printfn "        %25s %A - %A succeeded, trying %A" input rule a bc
-                    loop bc next r
+            | Pair (a, b) -> loop a (getNext b) input
+            | Triple (a, b, c) -> loop a (getNext (Pair(b, c))) input
             | OneOf (a, b) ->
-                match matchOneOf a next input with
-                | true, r -> (true, r)
-                | false, _ ->
-//                    printfn "        %25s %A - %A Failed, trying %A" input rule a b
-                    matchOneOf b next input
-
-    and matchOneOf rule next input =
-        match loop rule next input with
-        | false, _ -> false, ""
-        | true, r when next.IsNone -> true, r
-        | true, r ->
-//            printfn "        %25s OneOf - %A succeeded, testing Remainder %A" input rule next
-            match loop next.Value None r with
-            | true, "" -> true, r
-            | b, br ->
-//                printfn "        %25s OneOf - %A Remainder failed (%b, '%s')" input rule b br
-                false, ""
+                match loop a next input with
+                | true -> true
+                | false ->
+                    // printfn "        %25s %A - %A Failed, trying %A" input rule a b
+                    loop b next input
 
     match loop (rules.[0]) None input with
-    | true, "" ->
-//        printfn "MATCHED!%25s" input
+    | true ->
+        // printfn "MATCHED!%25s" input
         (true, input)
-    | _, _ -> (false, input)
+    | _ -> (false, input)
 
 let part1 (rules, input) =
     let result = input |> Array.map (matchesRule rules)
@@ -134,5 +114,7 @@ let part2 ((rules: Rules), input) =
             .Add(parseRule "8: 42 | 42 8")
             .Add(parseRule "11: 42 31 | 42 11 31")
 
-    let result = input |> Array.Parallel.map (matchesRule rules)
+    let result =
+        input |> Array.Parallel.map (matchesRule rules)
+
     result |> Array.filter fst |> Array.length
