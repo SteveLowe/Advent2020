@@ -42,14 +42,17 @@ let main _argv =
     time day15.Solve ()
     time day16.Solve ()
     time day17.Solve ()
-    
+
     solve 18 1 day18.getInput day18.part1 23507031841020L
     solve 18 2 day18.getInput day18.part2 218621700997826L
-    
+
     solve 19 1 day19.getInput day19.part1 184
     solve 19 2 day19.getInput day19.part2 389
 
     solve 20 1 day20.getInput day20.part1 19955159604613L
     solve 20 2 day20.getInput day20.part2 1639
+    
+    solve 21 1 day21.getInput day21.part1 1913
+    solve 21 2 day21.getInput day21.part2 -1
 
     0

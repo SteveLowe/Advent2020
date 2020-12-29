@@ -96,6 +96,9 @@ module Array =
         match (arr |> Array.tryFind f) with
         | Some a -> (Some a, (arr |> Array.filter (neq a)))
         | None -> (None, arr)
+        
+    let intersect arr1 arr2 =
+        Set.intersect (Set.ofArray arr1) (Set.ofArray arr2) |> Set.toArray
 
 module List =
     let addToMap (map: Map<'a, 'b>) (lst: ('a * 'b) list) =
