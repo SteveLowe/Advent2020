@@ -3,6 +3,7 @@ module advent2020.day20
 open System
 open System.IO
 open System.Text.RegularExpressions
+open advent2020.util
 
 type Edges =
     { Top: string
@@ -47,7 +48,7 @@ let parseTile (input: string array) =
       Edges = edges
       Picture = picture }
 
-let getTileOrientations (tile: Tile) =
+let getPictureOrientations picture =
     let rotate (picture: string array) =
         let getStringOfPos i _ =
             picture
@@ -73,12 +74,17 @@ let getTileOrientations (tile: Tile) =
             yield r3
         }
 
+    picture
+    |> getRotations
+    |> Seq.collect withFlipLeft
+    |> Seq.collect withFlipTop
+    |> Seq.distinct
+
+let getTileOrientations (tile: Tile) =
     { Id = tile.Id
       Orientations =
-          getRotations tile.Picture
-          |> Seq.collect withFlipLeft
-          |> Seq.collect withFlipTop
-          |> Seq.distinct
+          tile.Picture
+          |> getPictureOrientations
           |> Seq.map addEdges
           |> List.ofSeq }
 
@@ -136,7 +142,6 @@ let populateGrid (tiles: TileOrientations array) =
             { Id = tileId
               Edges = edges
               Picture = picture }
-        //        printfn "Filling %i,%i with %i" coord.X coord.Y tileId
         // add tile to grid
         let grid = grid |> Map.add coord (Some tile)
         // remove tile from list
@@ -176,4 +181,88 @@ let part1 input =
     |> List.map int64
     |> List.reduce (*)
 
-let part2 input = 2
+let part2 input =
+    let toPicture _ tile =
+        Array.sub tile.Picture 1 (tile.Picture.Length - 2)
+        |> Array.map (fun s -> s.Substring(1, s.Length - 2))
+
+    let joinPicture (grid: Map<Coord, string array>) y2 picture coord =
+        let tile = grid.[coord]
+        picture + tile.[y2]
+
+    let countChar c (s: string) =
+        s.ToCharArray()
+        |> Array.filter (eq c)
+        |> Array.length
+
+    let findTarget (target: string array) (picture: string array) =
+        let lastCol = picture.[0].Length - target.[0].Length
+
+        let target =
+            target
+            |> Array.map (fun l ->
+                l.ToCharArray()
+                |> Array.indexed
+                |> Array.filter (sndIs '#'))
+
+        let lineMatches targets (line: string) offset =
+            targets
+            |> Array.forall (fun (i, c) -> line.[offset + i] = c)
+
+        let rec targetMatches picY offsetY possibleMatches =
+            match possibleMatches, offsetY >= target.Length with
+            | _, true -> Some possibleMatches
+            | [], _ -> None
+            | _ ->
+                let newPossibleMatches =
+                    possibleMatches
+                    |> List.filter (lineMatches target.[offsetY] picture.[(picY + offsetY)])
+
+                targetMatches picY (offsetY + 1) newPossibleMatches
+
+        let rec loop y matches =
+            if y >= (picture.Length - target.Length) then
+                matches
+            else
+                match targetMatches y 0 [ 0 .. lastCol ] with
+                | Some m ->
+                    let newMatches =
+                        m
+                        |> List.map (fun x -> (x, y))
+                        |> List.append matches
+
+                    loop (y + 1) newMatches
+                | None -> loop (y + 1) matches
+
+        match loop 0 [] with
+        | [] -> None
+        | matches -> Some(picture, matches)
+
+    let grid, maxIndex =
+        input
+        |> Array.map getTileOrientations
+        |> populateGrid
+
+    let picGrid = grid |> Map.map toPicture
+
+    let picture =
+        [| 0 .. maxIndex |]
+        |> Array.collect (fun y -> [| 0 .. 7 |] |> Array.map (fun y2 -> y, y2))
+        |> Array.map (fun (y, y2) ->
+            [| 0 .. maxIndex |]
+            |> Array.map (fun x -> { X = x; Y = y })
+            |> Array.fold (joinPicture picGrid y2) "")
+
+    let target =
+        [| "                  # "
+           "#    ##    ##    ###"
+           " #  #  #  #  #  #   " |]
+
+    let picture, matches =
+        picture
+        |> getPictureOrientations
+        |> Seq.pick (findTarget target)
+
+    let targetPixels = target |> Array.sumBy (countChar '#')
+    let picturePixels = picture |> Array.sumBy (countChar '#')
+    picturePixels - (matches.Length * targetPixels)

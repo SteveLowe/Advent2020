@@ -17,6 +17,8 @@ let notNullOrWhiteSpace = nullOrWhiteSpace >> not
 
 let nsnd (_, b) = not b
 
+let sndIs x (_, b) = b = x 
+
 let addsTo (target: int64) a b = a + b = target
 let anyAddsTo target nums a = nums |> Array.exists (addsTo target a)
 

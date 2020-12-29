@@ -48,7 +48,8 @@ let main _argv =
     
     solve 19 1 day19.getInput day19.part1 184
     solve 19 2 day19.getInput day19.part2 389
-    
-    solve 20 1 day20.getInput day20.part1 -1L
+
+    solve 20 1 day20.getInput day20.part1 19955159604613L
+    solve 20 2 day20.getInput day20.part2 1639
 
     0
