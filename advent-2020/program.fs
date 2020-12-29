@@ -56,5 +56,6 @@ let main _argv =
     solve 21 2 day21.getInput day21.part2 "gpgrb,tjlz,gtjmd,spbxz,pfdkkzp,xcfpc,txzv,znqbr"
 
     solve 22 1 day22.getInput day22.part1 35299
+    solve 22 2 day22.getInput day22.part2 33266
 
     0
