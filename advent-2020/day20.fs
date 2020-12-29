@@ -10,11 +10,24 @@ type Edges =
       Bottom: string
       Left: string }
 
-type Tile = { Id: int64; Edges: Edges }
-type TileOrientations = { Id: int64; Orientations: Edges list }
+type Tile =
+    { Id: int
+      Edges: Edges
+      Picture: string array }
+
+type TileOrientations =
+    { Id: int
+      Orientations: (Edges * string array) list }
 
 type Coord = { X: int; Y: int }
 type Grid = Tile [,]
+
+let addEdges picture =
+    { Top = (picture |> Array.head)
+      Bottom = (picture |> Array.last)
+      Left = picture |> Array.map firstChar |> Array.toString
+      Right = picture |> Array.map lastChar |> Array.toString },
+    picture
 
 let parseTile (input: string array) =
     let (|IsTitle|_|) line =
@@ -25,41 +38,34 @@ let parseTile (input: string array) =
 
     let id =
         match title with
-        | IsTitle id -> int64 id
+        | IsTitle id -> int id
         | _ -> failwithf "Tile is not valid - Missing Title:\n%A" input
 
+    let edges, picture = tile |> addEdges
+
     { Id = id
-      Edges =
-          { Top = (tile |> Array.head)
-            Bottom = (tile |> Array.last)
-            Left = tile |> Array.map firstChar |> Array.toString
-            Right = tile |> Array.map lastChar |> Array.toString } }
+      Edges = edges
+      Picture = picture }
 
 let getTileOrientations (tile: Tile) =
-    let rotate edges =
-        { Top = edges.Left |> String.rev
-          Right = edges.Top
-          Bottom = edges.Right |> String.rev
-          Left = edges.Bottom }
+    let rotate (picture: string array) =
+        let getStringOfPos i _ =
+            picture
+            |> Array.map (fun s -> s.[i])
+            |> Array.toString
 
-    let withFlipLeft edges =
-        [ edges
-          { Top = edges.Top |> String.rev
-            Right = edges.Left
-            Bottom = edges.Bottom |> String.rev
-            Left = edges.Right } ]
+        picture |> Array.mapi getStringOfPos
 
-    let withFlipTop edges =
-        [ edges
-          { Top = edges.Bottom
-            Right = edges.Right |> String.rev
-            Bottom = edges.Top
-            Left = edges.Left |> String.rev } ]
+    let withFlipLeft picture =
+        [ picture
+          picture |> Array.map (String.rev) ]
 
-    let getRotations edges =
+    let withFlipTop picture = [ picture; picture |> Array.rev ]
+
+    let getRotations picture =
         seq {
-            yield edges
-            let r1 = edges |> rotate
+            yield picture
+            let r1 = picture |> rotate
             yield r1
             let r2 = r1 |> rotate
             yield r2
@@ -69,10 +75,11 @@ let getTileOrientations (tile: Tile) =
 
     { Id = tile.Id
       Orientations =
-          getRotations tile.Edges
+          getRotations tile.Picture
           |> Seq.collect withFlipLeft
           |> Seq.collect withFlipTop
           |> Seq.distinct
+          |> Seq.map addEdges
           |> List.ofSeq }
 
 let getInput file =
@@ -80,8 +87,8 @@ let getInput file =
     |> Array.splitOnEmpty
     |> Array.map parseTile
 
-let tileFitsTop top bottom = top.Bottom = bottom.Top
-let tileFitsLeft left right = left.Right = right.Left
+let tileFitsTop top (bottom, _) = top.Bottom = bottom.Top
+let tileFitsLeft left (right, _) = left.Right = right.Left
 
 let populateGrid (tiles: TileOrientations array) =
     let gridSize = int (Math.Sqrt(float tiles.Length))
@@ -124,9 +131,12 @@ let populateGrid (tiles: TileOrientations array) =
         validOrientations
         |> List.tryPick (tryFillGridWith grid coord tiles tile.Id)
 
-    and tryFillGridWith grid coord tiles tileId edges =
-        let tile = { Id = tileId; Edges = edges }
-//        printfn "Filling %i,%i with %i" coord.X coord.Y tileId
+    and tryFillGridWith grid coord tiles tileId (edges, picture) =
+        let tile =
+            { Id = tileId
+              Edges = edges
+              Picture = picture }
+        //        printfn "Filling %i,%i with %i" coord.X coord.Y tileId
         // add tile to grid
         let grid = grid |> Map.add coord (Some tile)
         // remove tile from list
@@ -163,6 +173,7 @@ let part1 input =
       grid.[{ X = maxIndex; Y = 0 }]
       grid.[{ X = maxIndex; Y = maxIndex }] ]
     |> List.map (fun t -> t.Id)
+    |> List.map int64
     |> List.reduce (*)
 
 let part2 input = 2
