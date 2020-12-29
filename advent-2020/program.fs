@@ -17,10 +17,10 @@ let inline solve day part getInput solver expected =
         getInput $"inputs/day%i{day}.txt" |> time solver
 
     if answer = expected then
-        printfn $"  answer: %i{answer} ✅ Correct!"
+        printfn $"  answer: %A{answer} ✅ Correct!"
         printfn ""
     else
-        printfn $"  answer: %i{answer} ❌ Incorrect! expected %i{expected}"
+        printfn $"  answer: %A{answer} ❌ Incorrect! expected %A{expected}"
         failwith $"day%i{day} part%i{part} failed"
 
 [<EntryPoint>]
@@ -53,6 +53,6 @@ let main _argv =
     solve 20 2 day20.getInput day20.part2 1639
     
     solve 21 1 day21.getInput day21.part1 1913
-    solve 21 2 day21.getInput day21.part2 -1
+    solve 21 2 day21.getInput day21.part2 "gpgrb,tjlz,gtjmd,spbxz,pfdkkzp,xcfpc,txzv,znqbr"
 
     0
