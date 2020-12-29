@@ -17,7 +17,7 @@ let notNullOrWhiteSpace = nullOrWhiteSpace >> not
 
 let nsnd (_, b) = not b
 
-let sndIs x (_, b) = b = x 
+let sndIs x (_, b) = b = x
 
 let addsTo (target: int64) a b = a + b = target
 let anyAddsTo target nums a = nums |> Array.exists (addsTo target a)
@@ -96,9 +96,12 @@ module Array =
         match (arr |> Array.tryFind f) with
         | Some a -> (Some a, (arr |> Array.filter (neq a)))
         | None -> (None, arr)
-        
+
     let intersect arr1 arr2 =
-        Set.intersect (Set.ofArray arr1) (Set.ofArray arr2) |> Set.toArray
+        Set.intersect (Set.ofArray arr1) (Set.ofArray arr2)
+        |> Set.toArray
+
+    let popHead arr = arr |> Array.head, arr |> Array.tail
 
 module List =
     let addToMap (map: Map<'a, 'b>) (lst: ('a * 'b) list) =
