@@ -60,7 +60,8 @@ module Seq =
 module Array =
     let withi arr = arr |> Array.mapi argtup2
 
-    let toString (arr: char array) = String.Join("", arr)
+    let joinString (separator: string) (arr: 'T array) = String.Join(separator, arr)
+    let toString (arr: 'T array) = arr |> joinString ""
 
     let addToMap (map: Map<'a, 'b>) (arr: ('a * 'b) array) =
         let rec loop m i =
@@ -111,3 +112,30 @@ module List =
             | Some (a, b) -> loop (m |> Map.add a b) lst.Tail
 
         loop map lst
+
+module ArrayLoop =
+    /// Builds a new array that contains the given subrange specified by starting index and length.
+    /// Will loop around the end of the Array
+    let sub (arr: 'T array) start length =
+        if length > arr.Length
+        then failwithf "%i is longer than the array" length
+
+        if start + length < arr.Length then
+            Array.sub arr start length
+        else
+            arr
+            |> Array.take (start - arr.Length + length)
+            |> Array.append (arr |> Array.skip start)
+
+    /// The same as sub, but also returns as a tuple, with the remainder of the ArrayLoop as the second element
+    let subr (arr: 'T array) start length =
+        let remainderStart = start + length % arr.Length
+        let remainderLength = arr.Length - length
+        sub arr start length, sub arr remainderStart remainderLength
+
+    /// Builds a new array with all elements, starting at index
+    /// Will loop around the end of the array
+    let fromIndex index arr =
+        let fromStart = arr |> Array.take index
+        let fromIndex = arr |> Array.skip index
+        fromStart |> Array.append fromIndex
