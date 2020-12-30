@@ -1,6 +1,7 @@
 module advent2020.day23
 
 open System.IO
+open advent2020.circularLinkedList
 
 let getInput file =
     File.ReadLines file
@@ -8,51 +9,64 @@ let getInput file =
     |> Seq.map string
     |> Seq.map int
     |> Seq.toArray
+    |> CircularLinkedList.ofArray
 
 let playCups cups moves =
-    let rec findDestinationIndex cups picks current =
+    let maxValue = cups |> CircularLinkedList.max
+    let cupDict = cups |> CircularLinkedList.toMap
+
+    let rec findDestinationValue current picks =
         let dest =
             match current with
-            | 0 -> cups |> Array.max
+            | 1 -> maxValue
             | _ -> current - 1
 
         match picks |> Array.contains dest with
-        | true -> findDestinationIndex cups picks dest
-        | _ ->
-            match cups |> Array.tryFindIndex (eq dest) with
-            | Some i -> i
-            | None -> findDestinationIndex cups picks dest
+        | false -> dest
+        | true -> findDestinationValue dest picks
 
-    let rec loop cups movesLeft =
+    let findDestinationNode picks current =
+        let dest = findDestinationValue current picks
+        cupDict.[dest]
+
+    let rec loop (cup: CircularLinkedListNode<int>) movesLeft =
         match movesLeft with
-        | 0 -> cups
+        | 0 -> cup
         | _ ->
-            // printfn "move %i cups %s" (moves - movesLeft + 1) (cups |> Array.take 8 |> Array.joinString " ")
-            let current = cups |> Array.head
-            let picks = ArrayLoop.sub cups 1 3
-            let destIndex = findDestinationIndex cups picks current
+            let picks =
+                cup.Next
+                |> CircularLinkedList.take 3
+                |> Seq.toArray
 
-            let nextCups = Array.create cups.Length 0
-            nextCups.[cups.Length - 1] <- current
-            nextCups.[0] <- cups.[4]
-            // after picks to dest
-            Array.blit cups 5 nextCups 1 (destIndex - 4)
-            // picks
-            Array.blit picks 0 nextCups (destIndex - 4 + 1) 3
-            // after dest to end
-            Array.blit cups (destIndex + 1) nextCups destIndex (cups.Length - destIndex - 1)
+            let destNode = findDestinationNode picks cup.Value
+            CircularLinkedList.moveAfter cup 3 destNode
 
-            loop nextCups (movesLeft - 1)
+            loop cup.Next (movesLeft - 1)
 
     loop cups moves
 
-let part1 input =
-    let finalCups = playCups input 100
+let part1 (cups: CircularLinkedListNode<int>) =
+    playCups cups 100 |> ignore
 
-    finalCups
-    |> ArrayLoop.fromIndex (finalCups |> Array.findIndex (eq 1))
+    cups
+    |> CircularLinkedList.find (eq 1)
+    |> CircularLinkedList.toArray
     |> Array.tail
     |> Array.toString
     |> int
 
-let part2 input = 2
+let part2 (cups: CircularLinkedListNode<int>) =
+    [| (CircularLinkedList.max cups + 1) .. 1000000 |]
+    |> CircularLinkedList.insertAfter cups.Previous
+
+    playCups cups 10000000 |> ignore
+
+    let twoRightOfOne =
+        cups
+        |> CircularLinkedList.find (eq 1)
+        |> CircularLinkedList.next 1
+        |> CircularLinkedList.take 2
+        |> Seq.toArray
+        |> Array.map int64
+
+    twoRightOfOne |> Array.reduce (*)

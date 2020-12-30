@@ -51,13 +51,14 @@ let main _argv =
 
     solve 20 1 day20.getInput day20.part1 19955159604613L
     solve 20 2 day20.getInput day20.part2 1639
-    
+
     solve 21 1 day21.getInput day21.part1 1913
     solve 21 2 day21.getInput day21.part2 "gpgrb,tjlz,gtjmd,spbxz,pfdkkzp,xcfpc,txzv,znqbr"
 
     solve 22 1 day22.getInput day22.part1 35299
     solve 22 2 day22.getInput day22.part2 33266
-    
+
     solve 23 1 day23.getInput day23.part1 45286397
+    solve 23 2 day23.getInput day23.part2 836763710L
 
     0
