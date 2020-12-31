@@ -7,6 +7,8 @@ let inline add a b = a + b
 let eq a b = a = b
 let neq a b = a <> b
 
+let veq a _ b = a = b
+
 let isTrue (b: bool) = b
 let isFalse (b: bool) = not b
 let setBit64 i a = a ||| (1L <<< i)
