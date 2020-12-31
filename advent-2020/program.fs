@@ -61,4 +61,5 @@ let main _argv =
     solve 23 1 day23.getInput day23.part1 45286397
     solve 23 2 day23.getInput day23.part2 836763710L
 
+    solve 24 1 day24.getInput day24.part1 434
     0
